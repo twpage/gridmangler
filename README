@@ -33,6 +33,7 @@ my_grid.drawBorderAt({"x": 2, "y": 2}, "rgb(200, 0, 0)");
 
 Also has a few helper functions:
 
-var adjacent_tiles = my_grid.getSurroundingTiles({"x": 4, "y": 0});
+var adjacent_tiles = my_grid.getSurroundingTiles({"x": 4, "y": 1});
   // returns an array of the 8 grid coordinates surrounding (4, 0)
+  // will return less than 8 if coordinates are not valid
   
