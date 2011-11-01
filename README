@@ -4,7 +4,7 @@ a first commit to get things going.
 
 
 gridmangler is a simple javascript module for tile or grid-based 
-HTML5 Canvas elements. (Hopefully) manages cross-browser obnoxiousness
+HTML5 Canvas events. (Hopefully) manages cross-browser obnoxiousness
 so all you have to worry about is the grid. Pass in functions that 
 take {"x": x, "y": y} integer coordinate grid locations. 
 
