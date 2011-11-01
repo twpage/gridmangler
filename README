@@ -1,0 +1,38 @@
+Note -- 
+This has not been tested in anything other than chrome just yet, mostly just
+a first commit to get things going.
+
+
+gridmangler is a simple javascript module for tile or grid-based 
+HTML5 Canvas elements. (Hopefully) manages cross-browser obnoxiousness
+so all you have to worry about is the grid. Pass in functions that 
+take {"x": x, "y": y} integer coordinate grid locations. 
+
+Supported grid events are (for now): 
+* mousedown
+* gainfocus (mouse moves into a new grid, called with new coord)
+* leavefocus (mouse moves to a new grid, called with "old" coord)
+
+gain/leave focus events allow for simple mouse-tracking based on 
+grid location.
+
+1. var my_grid = gridmangler();
+2. my_grid.init(my_canvas, tile_size);
+3. my_grid.addGridEvent("mousedown",
+     function (grid_xy) {
+       // stuff that happens when a grid is clicked
+     }
+   );
+
+Also supports drawing and simple art by grid:
+
+(Obviously this can be extended pretty easily to handle any Canvas drawing)
+
+my_grid.drawImageAt(my_image, {"x": 2, "y": 2});
+my_grid.drawBorderAt(my_image, {"x": 2, "y": 2});
+
+Also has a few helper functions:
+
+var adjacent_tiles = my_grid.getSurroundingTiles({"x": 4, "y": 0});
+  // returns an array of the 8 grid coordinates surrounding (4, 0)
+  
