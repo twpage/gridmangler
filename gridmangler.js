@@ -3,7 +3,7 @@
 // 10/30/2011
 //
 // Add grid-based events to an HTML5 Canvas element
-// v 0.1
+// v 0.2
 // ---------------------------------
 
 var gridmangler = function (canvas, tile_width, tile_height) {

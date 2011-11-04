@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+	
+<html>
+  <head>
+    <title>mangle some grids</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Brawler">
+    
+    <style type="text/css">
+      p { font-family: "Brawler", "Verdana", serif; }
+      canvas { border: 2px solid black; }
+    </style>
+    
+    <script src="/static/scripts/jquery-1.6.2.js"></script>
+    <script src="/static/scripts/gridmangler.js"></script>
+    <script src="/static/scripts/prettify.js"></script>
+    
+    <script type="text/javascript">
+      $(document).ready(function ( ) {
+	var tile_size = 20;
+	
+	var grid = gridmangler($('#id_cnv_simple').get()[0], tile_size, tile_size);
+	
+	grid.addGridEvent("mousedown", 
+	  function (grid_xy) {
+	    // check for double-click
+	    var last = grid.getLastClickGrid();
+	    
+	    if ((last.x === grid_xy.x ) && (last.y === grid_xy.y)) {
+	      $('#id_div_doubleclick').html('<p>double click detected at (' + grid_xy.x + ', ' + grid_xy.y + ')</p>');
+	      
+	      //var neighbors = grid.getSurroundingTiles(grid_xy);
+	      //for (i = 0; i < neighbors.length; i += 1) {
+		//grid.drawBorderAt(neighbors[i], "rgb(0, 0, 0)");
+	      //}
+	    } 
+	    
+	    grid.drawFillAt(grid_xy, "#99CCFF");
+	    grid.drawBorderAt(grid_xy, "rgba(255, 0, 0, 1)");
+	    
+	    $('#id_div_click').html('<p>clicked on grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')</p>');
+	  }
+	);
+	
+	grid.addGridEvent("gainfocus", 
+	  function (grid_xy) {
+	    grid.drawBorderAt(grid_xy, "#003366");
+	    $('#id_div_coordinates').html('<p>mouse is at grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')</p>');
+	    $('#id_div_click').html('<p/>');
+	    $('#id_div_doubleclick').html('<p/>');
+	  }
+	);
+	
+	grid.addGridEvent("leavefocus", 
+	  function (grid_xy) {
+	    grid.clearAt(grid_xy);
+	  }
+	);
+	
+	var test = grid.getSurroundingTiles({"x": 5, "y": 5});
+      }); // end document.ready()
+    </script>
+
+  </head>
+  
+  <body onload="prettyPrint()">
+    <h1><a href="http://github.com/twpage/gridmangler">gridmangler.js</a></h1>
+    <p>Simple grid/tile-based events for Canvas elements</p>
+    
+    <table id="id_tbl_simple" >
+      <tr>
+	<td>
+	  <canvas id="id_cnv_simple" width="160" height="160"> 
+	    If you can see this your browser is quite bad.
+	  </canvas>
+	</td>
+	
+	<td/>
+	<td style="vertical-align: top;">
+	  <div id="id_div_coordinates"></div>
+	  <div id="id_div_click"></div>
+	  <div id="id_div_doubleclick"></div>
+	</td>
+      </tr>
+    </table>
+    
+    <br/>
+    <div id="id_div_code_display">
+
+      <p><b>Create the object</b></p>
+      
+<pre class="prettyprint">
+var tile_width = 20, tile_height = 20;
+
+// with jQuery
+var grid = gridmangler($('#your_canvas_id_here').get()[0], tile_width, tile_height);
+
+// or without jQuery: (it's not required)
+var grid = gridmangler(document.getElementById('your_canvas_id_here'), tile_width, tile_height);
+</pre>
+
+      <p><b>Grid (or tile) coordinates are simple objects</b></p>
+      
+<pre class="prettyprint">
+var coord_xy = {"x": 1, "y": 2};
+var array_of_coords = [{"x": 0, "y": 2}, {"x": 1, "y": 2}];
+</pre>
+
+      <p><b>Add a simple mousedown grid-event</b></p>
+      
+<pre class="prettyprint">
+grid.addGridEvent("<b>mousedown</b>", 
+  function (grid_xy) {
+    // simple grid click event
+    grid.drawFillAt(grid_xy, "#99CCFF");
+    grid.drawBorderAt(grid_xy, "rgba(255, 0, 0, 1)");
+    
+    $('#id_div_click').html('&lt;p&gt;clicked on grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
+  }
+);
+</pre>      
+
+      <p><b>Use the focus grid events to track mouse movement</b></p>
+      
+<pre class="prettyprint">
+grid.addGridEvent("<b>gainfocus</b>", 
+  function (grid_xy) {
+    grid.drawBorderAt(grid_xy, "#003366");
+    $('#id_div_coordinates').html('&lt;p&gt;mouse is at grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
+    $('#id_div_click').html('&lt;p/&gt;');
+    $('#id_div_doubleclick').html('&lt;p/&gt;');
+  }
+);
+
+// gridmangler's <b>drawBorder</b> result is entirely contained within the confines of the grid, 
+// which as far as I can tell is different from the default strokeStyle of Canvas 
+// (where borders are actually +1px outside the specified rectangle)
+
+grid.addGridEvent("<b>leavefocus</b>", 
+  function (grid_xy) {
+    grid.clearAt(grid_xy);
+  }
+);
+</pre>
+      
+      <p><b>Add "double-click" support</b></p>
+
+<pre class="prettyprint">
+grid.addGridEvent("<b>mousedown</b>", 
+  function (grid_xy) {
+    // simple grid click event
+    grid.drawFillAt(grid_xy, "#99CCFF");
+    grid.drawBorderAt(grid_xy, "rgba(255, 0, 0, 1)");
+    
+    // check our last click for a "double-click"-type event
+    var last = grid.getLastClickGrid();
+    
+    if ((last.x === grid_xy.x ) && (last.y === grid_xy.y)) {
+      $('#id_div_doubleclick').html('&lt;p&gt;double click detected at (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
+    } 
+	    
+    $('#id_div_click').html('&lt;p&gt;clicked on grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
+  }
+);
+</pre>
+
+  <p><b>Canvas Drawing</b></p>
+  
+<pre class="prettyprint">
+// images!
+grid.drawImageAt(grid_xy, image);
+
+// the basics
+grid.drawBorderAt(grid_xy, strokeStyle);
+grid.drawFillAt(grid_xy, fillStyle);
+grid.clearAt(grid_xy);
+
+// expand as necessary
+var context_rect = grid.getContextRectangle(grid_xy); // scales back up to Canvas context coords
+// by default, width and height are the size of an individual tile
+
+grid.getCanvasContext().<i>any_2d_canvas_method</i>(context_rect.x, context_rect.y, context_rect.width, context_rect.height);
+
+</pre>
+
+  <p><b>Other useful stuff</b></p>
+  
+<pre class="prettyprint">
+// grid utilities
+var neighbors = grid.getSurroundingTiles(grid_xy); // all 8 surrounding 
+
+for (i = 0; i &lt; neighbors.length; i += 1) {
+  grid.drawImageAt(neighbors[i], other_image);
+}
+
+var adjacent = grid.getCardinalTiles(grid_xy); // for the 4 N/S/E/W tiles
+
+// simple grid coordinate math 
+var right_xy = grid.getTileFromOffset(grid_xy, {"x": 1, "y": 0});
+var array_of_coords = grid.getTilesFromArray(grid_xy,
+    [{"x": 0, "y": 1}, {"x": 0, "y": 2}, {"x": 0, "y": 3}]);
+    // returns an array of coords offset from the starting grid_xy
+
+// use last visited grid to figure out what to re-draw 
+// similar to .getLastClickGrid() above
+grid.getLastVisitGrid(); // returns coord object {"x": x, "y": y}
+</pre>
+
+    </div>
+    <hr>
+    <p>Please leave any comments for me at <a href="http://github.com/twpage/gridmangler">github</a></p>!
+  </body>
+</html>

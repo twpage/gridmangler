@@ -1,8 +1,7 @@
-Note -- 
-This has not been tested in anything other than chrome just yet, mostly just
-a first commit to get things going.
+** NOTES **
+ver 0.2 -- This has not been tested in anything other than chrome just yet.
 
-
+** DESCRIPTION **
 gridmangler is a simple javascript module for tile or grid-based 
 HTML5 Canvas events. (Hopefully) gridmangler manages the cross-browser obnoxiousness
 so all you have to worry about is the grid. Define your own event functions that
@@ -30,7 +29,7 @@ Also supports drawing and simple art by grid:
 my_grid.drawImageAt({"x": 2, "y": 2}, my_image);
 my_grid.drawBorderAt({"x": 2, "y": 2}, "rgb(200, 0, 0)");
 
-Also has a few helper functions:
+Also has a few helper functions that do simple coordinate math:
 
 var adjacent_tiles = my_grid.getSurroundingTiles({"x": 4, "y": 1});
   // returns an array of the 8 grid coordinates surrounding (4, 1)
