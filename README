@@ -4,8 +4,8 @@ a first commit to get things going.
 
 
 gridmangler is a simple javascript module for tile or grid-based 
-HTML5 Canvas events. (Hopefully) manages cross-browser obnoxiousness
-so all you have to worry about is the grid. Pass in functions that 
+HTML5 Canvas events. (Hopefully) gridmangler manages the cross-browser obnoxiousness
+so all you have to worry about is the grid. Define your own event functions that
 take {"x": x, "y": y} integer coordinate grid locations. 
 
 Supported grid events are (for now): 
@@ -13,8 +13,7 @@ Supported grid events are (for now):
 * gainfocus (mouse moves into a new grid, called with new coord)
 * leavefocus (mouse moves to a new grid, called with "old" coord)
 
-gain/leave focus events allow for simple mouse-tracking based on 
-grid location.
+gain/leave focus events allow for simple mouse-tracking based on grid location.
 
 1. var my_grid = gridmangler();
 2. my_grid.init(my_canvas, tile_size);
@@ -26,7 +25,7 @@ grid location.
 
 Also supports drawing and simple art by grid:
 
-(Obviously this can be extended pretty easily to handle any Canvas drawing)
+(Obviously this can be extended pretty easily to handle any Canvas drawing methods)
 
 my_grid.drawImageAt({"x": 2, "y": 2}, my_image);
 my_grid.drawBorderAt({"x": 2, "y": 2}, "rgb(200, 0, 0)");
@@ -34,6 +33,6 @@ my_grid.drawBorderAt({"x": 2, "y": 2}, "rgb(200, 0, 0)");
 Also has a few helper functions:
 
 var adjacent_tiles = my_grid.getSurroundingTiles({"x": 4, "y": 1});
-  // returns an array of the 8 grid coordinates surrounding (4, 0)
+  // returns an array of the 8 grid coordinates surrounding (4, 1)
   // will return less than 8 if coordinates are not valid
   
