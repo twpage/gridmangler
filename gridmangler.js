@@ -83,11 +83,11 @@ var gridmangler = function (canvas, tile_width, tile_height) {
 	}
     };
 
-    var gridEventMousedown = function (grid_xy) {
+    var gridEventMousedown = function (grid_xy, button, shiftKey) {
     // wrapper for user-defined grid event function
     
 	if (isValidGridCoordinates(grid_xy)) {
-	    my_gridEventMousedown(grid_xy);
+	    my_gridEventMousedown(grid_xy, button, shiftKey);
 	    my_last_click_xy = grid_xy;
 	} else {
 	    invalidGridCoordinates(grid_xy, "mousedown");
@@ -160,7 +160,7 @@ var gridmangler = function (canvas, tile_width, tile_height) {
     // grid "mousedown" is essentially the same as a canvas mousedown with mapped coords
     
 	var grid_xy = convertMouseCoordinatesToGrid(event);
-	gridEventMousedown(grid_xy);
+	gridEventMousedown(grid_xy, event.button, event.shiftKey);
     };
     
     var canvasOnMousemove = function(event) {
@@ -351,7 +351,11 @@ var gridmangler = function (canvas, tile_width, tile_height) {
 	return my_context;
     };
     
-
+	that.removeEventListeners = function ( ) {
+		my_canvas.removeEventListener("mousedown", canvasOnMousedown, false);
+		my_canvas.removeEventListener("mousemove", canvasOnMousemove, false);
+	};
+	
     // add these last
     my_canvas.addEventListener("mousedown", canvasOnMousedown, false);
     my_canvas.addEventListener("mousemove", canvasOnMousemove, false);
