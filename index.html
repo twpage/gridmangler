@@ -23,7 +23,7 @@
 	var grid = gridmangler($('#id_cnv_simple').get()[0], tile_size, tile_size);
 	
 	grid.addGridEvent("mousedown", 
-	  function (grid_xy) {
+	  function (grid_xy, button, shiftKey) {
 	    // check for double-click
 	    var last = grid.getLastClickGrid();
 	    
@@ -39,7 +39,16 @@
 	    grid.drawFillAt(grid_xy, "#99CCFF");
 	    grid.drawBorderAt(grid_xy, "rgba(255, 0, 0, 1)");
 	    
-	    $('#id_div_click').html('<p>clicked on grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')</p>');
+	    
+	    var html = '';
+		html = '<p>Button ' + button + ' ';
+		
+		if (shiftKey) {
+		  html += 'Shift-';
+		}
+		
+		html += 'Clicked on grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')</p>';
+	    $('#id_div_click').html(html);
 	  }
 	);
 	
@@ -67,6 +76,7 @@
   <body onload="prettyPrint()">
     <h1><a href="http://github.com/twpage/gridmangler">gridmangler.js</a></h1>
     <p>Simple grid/tile-based events for Canvas elements</p>
+	<p>Now passes button number and shift-modifier by default</p>
     
     <table id="id_tbl_simple" >
       <tr>
