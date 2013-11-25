@@ -23,17 +23,12 @@
 	var grid = gridmangler($('#id_cnv_simple').get()[0], tile_size, tile_size);
 	
 	grid.addGridEvent("mousedown", 
-	  function (grid_xy, button, shiftKey) {
+	  function (grid_xy, button, shiftKey, isDoubleClick) {
 	    // check for double-click
 	    var last = grid.getLastClickGrid();
 	    
-	    if ((last.x === grid_xy.x ) && (last.y === grid_xy.y)) {
+      if (isDoubleClick) {
 	      $('#id_div_doubleclick').html('<p>double click detected at (' + grid_xy.x + ', ' + grid_xy.y + ')</p>');
-	      
-	      //var neighbors = grid.getSurroundingTiles(grid_xy);
-	      //for (i = 0; i < neighbors.length; i += 1) {
-		//grid.drawBorderAt(neighbors[i], "rgb(0, 0, 0)");
-	      //}
 	    } 
 	    
 	    grid.drawFillAt(grid_xy, "#99CCFF");
@@ -76,7 +71,7 @@
   <body onload="prettyPrint()">
     <h1><a href="http://github.com/twpage/gridmangler">gridmangler.js</a></h1>
     <p>Simple grid/tile-based events for Canvas elements</p>
-	<p>Now passes button number and shift-modifier by default</p>
+	<p>Passes button number, shift-modifier, and <b>double-click indicator</b> by default</p>
     
     <table id="id_tbl_simple" >
       <tr>
@@ -108,6 +103,11 @@ var grid = gridmangler($('#your_canvas_id_here').get()[0], tile_width, tile_heig
 
 // or without jQuery: (it's not required)
 var grid = gridmangler(document.getElementById('your_canvas_id_here'), tile_width, tile_height);
+
+// optional 'options' argument, currently supports doubleclickspeed (default is 500)
+var grid = gridmangler($('#your_canvas_id_here').get()[0], tile_width, tile_height,
+  {"doubleclickspeed": 250 }
+);
 </pre>
 
       <p><b>Grid (or tile) coordinates are simple objects</b></p>
@@ -118,16 +118,30 @@ var array_of_coords = [{"x": 0, "y": 2}, {"x": 1, "y": 2}];
 </pre>
 
       <p><b>Add a simple mousedown grid-event</b></p>
-      
 <pre class="prettyprint">
 grid.addGridEvent("<b>mousedown</b>", 
-  function (grid_xy) {
-    // simple grid click event
-    grid.drawFillAt(grid_xy, "#99CCFF");
-    grid.drawBorderAt(grid_xy, "rgba(255, 0, 0, 1)");
+    function (grid_xy, button, shiftKey, isDoubleClick) {
+      // check for double-click
+      var last = grid.getLastClickGrid();
+      
+      if (isDoubleClick) {
+        $('#id_div_doubleclick').html('&lt;p&gt;double click detected at (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
+      } 
+      
+      grid.drawFillAt(grid_xy, "#99CCFF");
+      grid.drawBorderAt(grid_xy, "rgba(255, 0, 0, 1)");
+      
+      
+      var html = '';
+      html = '&lt;p&gt;Button ' + button + ' ';
     
-    $('#id_div_click').html('&lt;p&gt;clicked on grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
-  }
+      if (shiftKey) {
+        html += 'Shift-';
+      }
+    
+      html += 'Clicked on grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;';
+        $('#id_div_click').html(html);
+      }
 );
 </pre>      
 
