@@ -4,6 +4,7 @@ Supported grid events are (for now):
 * mousedown
 * gainfocus (mouse moves into a new grid, called with new coord)
 * leavefocus (mouse moves to a new grid, called with "old" coord)
+* longpress (hold mouse down/click on a grid for a bit longer (500ms by default)
 
 gain/leave focus events allow for simple mouse-tracking based on grid location.
 
