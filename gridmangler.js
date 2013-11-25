@@ -21,8 +21,9 @@ var gridmangler = function (canvas, tile_width, tile_height, options) {
 	var my_last_click_xy = {"x": -1, "y": -1};
 	var my_last_click_time = 0;
 	var my_last_visit_xy = {"x": -1, "y": -1};
-	var my_doubleclickspeed = (_ref = options.doubleclickspeed) != null ? _ref : 500;
-
+	var my_doubleClickSpeed = (_ref = options.doubleclickspeed) != null ? _ref : 500;
+	var my_longPressSpeed = (_ref = options.longpressspeed) != null ? _ref : 500;
+	var my_mouseDownTime = 0; // keep track of longPress
 	var that = {};
 	
 	// Init
@@ -62,6 +63,7 @@ var gridmangler = function (canvas, tile_width, tile_height, options) {
 	var my_gridEventMousedown = function ( ) {};
 	var my_gridEventLeaveFocus = function ( ) {};
 	var my_gridEventGainFocus = function ( ) {};
+	var my_gridEventLongpress = function ( ) {};
 	
 	var invalidGridCoordinates = function (grid_xy, event_name) {
 		// will eventually be a wrapper for user-defined error function is necessary?
@@ -96,7 +98,6 @@ var gridmangler = function (canvas, tile_width, tile_height, options) {
 		
 		if (isValidGridCoordinates(grid_xy)) {
 			my_gridEventMousedown(grid_xy, button, shiftKey, isDoubleClick);
-			my_last_click_xy = grid_xy;
 		} else {
 			invalidGridCoordinates(grid_xy, "mousedown");
 		}
@@ -123,6 +124,16 @@ var gridmangler = function (canvas, tile_width, tile_height, options) {
 		}
 	};
 	
+	var gridEventLongpress = function (grid_xy, button, shiftKey) {
+		// wrapper for user-defined grid event function
+		
+		if (isValidGridCoordinates(grid_xy)) {
+			my_gridEventLongpress(grid_xy, button, shiftKey);
+		} else {
+			invalidGridCoordinates(grid_xy, "longpress");
+		}
+	};
+
 	var relMouseCoords = function (event){
 		// Returns the relative mouse coordinates for a canvas element, avoiding cross-browser obnoxiousness
 		// From Ryan Artecona, 
@@ -163,18 +174,58 @@ var gridmangler = function (canvas, tile_width, tile_height, options) {
 		
 		return {"x": gridx, "y": gridy};
 	};
-	  
+
+	var canvasOnMouseup = function (event) {
+		// depending on how long we held the click, call longpress or regular click
+		// only calls clicks when we are in the same grid
+
+		var mouseUpTime = new Date();
+		var grid_xy = convertMouseCoordinatesToGrid(event);
+
+		if (grid_xy.x == my_last_click_xy.x && grid_xy.y == my_last_click_xy.y) {
+			if (mouseUpTime - my_mouseDownTime > my_longPressSpeed) {
+				// longpress
+				canvasLongClick(event);
+			} else {
+				// click
+				canvasClick(event);
+			}
+		} else {
+			// mouseup outside of mousedown grid, no click generated
+			;
+		}
+	};
+	
 	var canvasOnMousedown = function (event) {
+		// keep track of when we clicked down
+
+		var grid_xy = convertMouseCoordinatesToGrid(event);
+
+		my_mouseDownTime = new Date();
+		my_last_click_xy = grid_xy;
+	};
+
+	var canvasLongClick = function (event) {
 		// Converts mouse coords into grid coords and calls appropriate grid event
-		// grid "mousedown" is essentially the same as a canvas mousedown with mapped coords
-		
+		// grid event is essentially the same as a canvas event with mapped coords
+	  
+		var grid_xy = convertMouseCoordinatesToGrid(event);
+		gridEventLongpress(grid_xy, event.button, event.shiftKey);
+	};
+
+	var canvasClick = function (event) {
+		// Converts mouse coords into grid coords and calls appropriate grid event
+		// grid event is essentially the same as a canvas event with mapped coords
+		// clicking does some extra stuff such as checking which button is used
+	  
 		var grid_xy = convertMouseCoordinatesToGrid(event);
 		var now = new Date();
+		var delta_last_click = now - my_last_click_time;
 		var bDoubleClick = false;
 
 		// check for double clicks
 		if (grid_xy.x == my_last_click_xy.x && grid_xy.y == my_last_click_xy.y) {
-			if (now - my_last_click_time < my_doubleclickspeed) {
+			if (delta_last_click < my_doubleClickSpeed) {
 				bDoubleClick = true;
 			}
 		}
@@ -216,6 +267,8 @@ var gridmangler = function (canvas, tile_width, tile_height, options) {
 		} else if (event_name === "leavefocus") {
 			my_gridEventLeaveFocus = event_fn;
 			
+		} else if (event_name === "longpress") {
+			my_gridEventLongpress = event_fn;
 		} else {
 			throw {
 			name: 'InvalidGridEventError',
@@ -382,6 +435,7 @@ var gridmangler = function (canvas, tile_width, tile_height, options) {
 	// add these last
 	my_canvas.addEventListener("mousedown", canvasOnMousedown, false);
 	my_canvas.addEventListener("mousemove", canvasOnMousemove, false);
+	my_canvas.addEventListener("mouseup", canvasOnMouseup, false);
 	
 	// this is the actual grid mangler object with public methods	
 	return that;

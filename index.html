@@ -61,6 +61,13 @@
 	    grid.clearAt(grid_xy);
 	  }
 	);
+
+  grid.addGridEvent("longpress",
+    function (grid_xy) {
+      $('#id_div_click').html('<p>Long-press at grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')</p>');
+      $('#id_div_doubleclick').html('<p/>');
+    }
+  );
 	
 	var test = grid.getSurroundingTiles({"x": 5, "y": 5});
       }); // end document.ready()
@@ -168,23 +175,16 @@ grid.addGridEvent("<b>leavefocus</b>",
 );
 </pre>
       
-      <p><b>Add "double-click" support</b></p>
-
+      <p><b>Add "longpress" support</b></p>
+      <p>"longpressspeed" option controls the timer, default is 500ms
 <pre class="prettyprint">
-grid.addGridEvent("<b>mousedown</b>", 
+var grid = gridmangler($('#your_canvas_id_here').get()[0], tile_width, tile_height,
+  {"longpressspeed": 1000 }
+  
+grid.addGridEvent("longpress",
   function (grid_xy) {
-    // simple grid click event
-    grid.drawFillAt(grid_xy, "#99CCFF");
-    grid.drawBorderAt(grid_xy, "rgba(255, 0, 0, 1)");
-    
-    // check our last click for a "double-click"-type event
-    var last = grid.getLastClickGrid();
-    
-    if ((last.x === grid_xy.x ) && (last.y === grid_xy.y)) {
-      $('#id_div_doubleclick').html('&lt;p&gt;double click detected at (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
-    } 
-	    
-    $('#id_div_click').html('&lt;p&gt;clicked on grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
+    $('#id_div_click').html('&lt;p&gt;Long-press at grid tile (' + grid_xy.x + ', ' + grid_xy.y + ')&lt;/p&gt;');
+    $('#id_div_doubleclick').html('&lt;p/&gt;');
   }
 );
 </pre>
