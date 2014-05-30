@@ -30,7 +30,7 @@ var adjacent_tiles = my_grid.getSurroundingTiles({"x": 4, "y": 1});
   // will return less than 8 if coordinates are not valid
   
 ** DEMO SITE **
-http://heroicfisticuffs.com/gridmangler
+http://heroicfisticuffs.com/projects/gridmangler
 
 ** NOTES **
 tested on chrome and firefox 8
